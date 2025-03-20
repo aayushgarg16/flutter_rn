@@ -47,8 +47,8 @@ flutter {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
         // Explicit RN dependencies:
-    implementation("com.facebook.react:react-android:0.71.8")
-    implementation("com.facebook.react:hermes-android:0.71.8")
+    implementation("com.facebook.react:react-android:0.74.3")
+    implementation("com.facebook.react:hermes-android:0.74.3")
     implementation(fileTree("libs") { include("*.aar") })
 
     // React Native Android dependencies from Maven Central (essential)
