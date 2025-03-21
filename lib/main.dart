@@ -1,42 +1,40 @@
+
+
+
+
+// Build on foundational classes available in flutter.
+// It gives the material design components ready to use.
+// Flutter does not use native components, so components can be customized for iOS as well
 import 'package:flutter/material.dart';
-import 'react_native_android_widget.dart'; // Explicit import 👈
+import 'package:flutter_rn_app/screens/home/home_screen.dart';
 
+// Return type needs to be specified. In case of void, it can be omitted.
 void main() {
-  runApp(const MyApp());
+  runApp(App());  // Need semicolon to specify the end of line.
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// stateless widget contains a build method, similar to render method in RN.
+// Everything in Flutter is a widget.
+// StatelessWidget is basically a component which does not have any state of its own.
+class App extends StatelessWidget {
+  const App({super.key});
 
+  // Build is similar to render method
+  // BuildContext is the location of any particular widget in the app.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(title: 'Flutter RN Integration'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: const ReactNativeAndroidWidget(),
+    // Only 1 Material App at the root of the project.
+    return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomeScreen()
+      },
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.black,
+        appBarTheme: AppBarTheme(color: Colors.black),
+        brightness: Brightness.dark
       ),
     );
   }
-}
+} 
