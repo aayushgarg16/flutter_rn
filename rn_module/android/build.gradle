@@ -23,6 +23,26 @@ allprojects {
         google()
         mavenCentral()
     }
+
+    // Substitute com.facebook.react:react-native -> react-android
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("com.facebook.react:react-native"))
+                .using(module("com.facebook.react:react-android:0.74.3"))
+        }
+    }
+
+    // ✅ Global Java & Kotlin version alignment for all modules
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "17"
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 // apply plugin: "com.facebook.react.rootproject"

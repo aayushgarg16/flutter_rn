@@ -13,6 +13,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.shell.MainReactPackage
+import com.facebook.react.PackageList
 import com.facebook.soloader.SoLoader
 
 
@@ -34,17 +35,24 @@ object RNInstanceManagerHolder {
     if (instance == null) {
       // Get the FlutterActivity from the context
       val activity = context.getFlutterActivity()
-      instance = ReactInstanceManager.builder()
+      val manager = ReactInstanceManager.builder()
         .setApplication(activity.application)
         .setCurrentActivity(activity)
         .setBundleAssetName("index.android.bundle")
         .setJSMainModulePath("index")
-        .addPackage(MainReactPackage())
+        .addPackages(PackageList(activity.application).getPackages())
+        // .addPackage(ReanimatedPackage().also {
+        //     ReanimatedPackage.setReactInstanceManager(instance) // 👈 key line
+        // })
         .setUseDeveloperSupport(true) // true for debugging; set to false in release
         .setInitialLifecycleState(LifecycleState.RESUMED)
         .build()
+      
+      com.swmansion.reanimated.ReanimatedPackage.setReactInstanceManager(manager) // 👈 inject it
+
       // Preload the JS context in background to reduce startup delay.
-      instance!!.createReactContextInBackground()
+      manager!!.createReactContextInBackground()
+      instance = manager
     }
     return instance!!
   }

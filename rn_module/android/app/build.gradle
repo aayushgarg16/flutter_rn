@@ -11,6 +11,9 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false"
+        buildConfigField "boolean", "IS_HERMES_ENABLED", "false"
     }
 
     buildTypes {
@@ -23,17 +26,15 @@ android {
         abortOnError false
     }
 
-    // ADD THIS BLOCK:
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = "17"
     }
 
-    // Make sure native libraries are packaged correctly
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
@@ -47,24 +48,22 @@ android {
     }
 }
 
-// Explicitly enable Hermes (or set to false for JSC)
 project.ext.react = [
-    enableHermes: true  // Change to false if you prefer JSC.
+    enableHermes: true
 ]
 
 repositories {
     google()
     mavenCentral()
     maven { url 'https://jitpack.io' }
-    // REMOVE node_modules/react-native maven
 }
 
 dependencies {
-    implementation("com.facebook.react:react-android:+")
-    implementation("com.facebook.react:hermes-android:+")
+    implementation("com.facebook.react:react-android:0.74.3")
+    implementation("com.facebook.react:hermes-android:0.74.3")
+    api project(':react-native-safe-area-context')
     implementation fileTree(dir: 'libs', include: ['*.aar'])
 }
 
-// Required for native modules
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); 
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle")
 applyNativeModulesAppBuildGradle(project)
