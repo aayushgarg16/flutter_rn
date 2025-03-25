@@ -36,6 +36,16 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
+
+            // ✅ Enable code shrinking and resource optimization
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            // ✅ Add custom ProGuard rules
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                file("proguard-rules.pro") // Make sure this file exists
+            )
         }
     }
 }
