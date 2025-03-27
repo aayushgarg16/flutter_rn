@@ -7,7 +7,7 @@
 // Flutter does not use native components, so components can be customized for iOS as well
 import 'package:flutter/material.dart';
 import 'package:flutter_rn_app/screens/dashboard/dashboard.dart';
-import 'package:flutter_rn_app/screens/home/home_screen.dart';
+import 'package:flutter_rn_app/splash_screen.dart';
 
 // Return type needs to be specified. In case of void, it can be omitted.
 void main() {
@@ -28,7 +28,8 @@ class App extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => DashboardScreen()
+        '/': (context) => const SplashScreen(),
+        '/dashboard': (context) => DashboardScreen()
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

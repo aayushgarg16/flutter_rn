@@ -61,7 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
               bottom: 16.0,
             ),
             child: const Text(
-              'I am Flutter including dashboard',
+              'I am Flutter. This whole page including dashboard is built using Flutter.',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w300,

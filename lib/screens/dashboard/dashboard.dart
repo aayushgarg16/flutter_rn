@@ -1,7 +1,6 @@
-// Flutter UI Code for Dashboard with Bottom Navigation (Modular)
-
 import 'package:flutter/material.dart';
 import 'package:flutter_rn_app/screens/home/home_screen.dart';
+import 'package:lottie/lottie.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -10,17 +9,46 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  late List<AnimationController> _animationControllers;
 
   final List<Widget> _pages = [
     const HomeScreen(),
-    const DashboardHomePage(), // Portfolio
-    const Placeholder(fallbackHeight: 200), // Market
-    const Placeholder(fallbackHeight: 200), // Refer
+    const DashboardHomePage(),
+    const Placeholder(fallbackHeight: 200),
+    const Placeholder(fallbackHeight: 200),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _animationControllers = List.generate(
+      4,
+      (_) => AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 300),
+        lowerBound: 1.0,
+        upperBound: 1.2,
+      ),
+    );
+    _animationControllers[_selectedIndex].forward();
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _animationControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
   void _onItemTapped(int index) {
+    if (_selectedIndex == index) return;
+
+    _animationControllers[_selectedIndex].reverse();
+    _animationControllers[index].forward();
+
     setState(() {
       _selectedIndex = index;
     });
@@ -35,21 +63,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.white,
         shape: const CircleBorder(),
         elevation: 6,
-        child: const Icon(Icons.star, color: Colors.green),
+        child: Lottie.asset(
+          'assets/lottie/discover.json',
+          width: 40,
+          height: 40,
+          fit: BoxFit.contain,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.pie_chart), label: 'Portfolio'),
-          BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: 'Market'),
-          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard), label: 'Refer'),
-        ],
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 6.0,
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildNavItem(icon: Icons.home, label: 'Home', index: 0),
+              _buildNavItem(icon: Icons.pie_chart, label: 'Portfolio', index: 1),
+              const SizedBox(width: 48), // space for FAB
+              _buildNavItem(icon: Icons.show_chart, label: 'Market', index: 2),
+              _buildNavItem(icon: Icons.card_giftcard, label: 'Refer', index: 3),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({required IconData icon, required String label, required int index}) {
+    final isSelected = _selectedIndex == index;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _onItemTapped(index),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8), // reduced padding
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ScaleTransition(
+                scale: _animationControllers[index],
+                child: Icon(icon, color: isSelected ? Colors.green : Colors.grey),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isSelected ? Colors.green : Colors.grey,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
