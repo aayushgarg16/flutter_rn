@@ -4,9 +4,10 @@
 
     <application
         android:name="${applicationName}"
-        android:label="flutter_rn_app"
+        android:label="Lemonn FTRN"
         android:icon="@mipmap/ic_launcher"
-        tools:replace="android:name,android:label">
+        tools:replace="android:name,android:label"
+        android:theme="@style/LaunchTheme">
 
         <!-- Flutter MainActivity -->
         <activity
