@@ -40,7 +40,8 @@ object RNInstanceManagerHolder {
         .setCurrentActivity(activity)
         .setBundleAssetName("index.android.bundle")
         .setJSMainModulePath("index")
-        .addPackages(PackageList(activity.application).getPackages())
+        .addPackages(PackageList(activity.application).getPackages() +
+            listOf(DetailsPackage()))
         // .addPackage(ReanimatedPackage().also {
         //     ReanimatedPackage.setReactInstanceManager(instance) // 👈 key line
         // })

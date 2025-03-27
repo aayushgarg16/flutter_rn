@@ -9,7 +9,7 @@ const DetailsScreen = () => {
 
     return (
         <View style={styles.detailsContainer}>
-            <Text style={styles.label}>Saved Input from Redux:</Text>
+            <Text style={styles.label}>Saved Input from Reduxing:</Text>
             <Text style={styles.savedText}>{savedInput || 'Nothing saved yet.'}</Text>
         </View>
     );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet, Text, TextInput, Button } from 'react-native';
+import { View, ScrollView, StyleSheet, Text, TextInput, Button, NativeModules } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +20,8 @@ const HomeScreen: React.FC = ({ navigation }: HomeScreenProps) => {
 
   const handleSaveAndNavigate = () => {
     dispatch(setUserInput(inputText));
-    navigation.navigate('Details');
+    // navigation.navigate('Details');
+    NativeModules.DetailsModule.openDetailsPage(inputText);
   };
 
   return (
