@@ -1,79 +1,155 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+ # React Native Android Configuration Guide
 
-# Getting Started
+This guide outlines steps to configure React Native (RN) packages for Android, resolve module visibility issues, and run the application.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+---
 
-## Step 1: Start the Metro Server
+## 🛠️ Build Configuration
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+### 1. Update `build.gradle`
+Ensure Java 17 compatibility in **all RN package** `build.gradle` files:
 
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
+```groovy
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
 ```
 
-## Step 2: Start your Application
+### 2. Kotlin Visibility Fixes
+Remove `internal` modifiers from classes in third-party packages (e.g., `react-native-safe-area-context`):
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+1. Find affected files:
+   ```bash
+   grep -r 'internal class' node_modules/react-native-safe-area-context/android/src/
+   ```
 
-### For Android
+2. Modify classes like:
+   - `InsetsChangeEvent`
+   - `Insets`
+   - `InsetsChangeEventEmitter`
 
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+**Before:**
+```kotlin
+internal class InsetsChangeEvent(...)
 ```
 
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+**After:**
+```kotlin
+class InsetsChangeEvent(...)  // Remove 'internal' modifier
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+---
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+## 🚀 Run the Application
 
-## Step 3: Modifying your App
+### Switch to Application Build
+1. **Uncomment** in your Android project:
+   - `MainApplication.java`
+   - `MainActivity.java`
+   - `AndroidManifest.xml`
 
-Now that you have successfully run the app, let's modify it.
+2. Update `android/app/build.gradle`:
+   ```groovy
+   // Before
+   apply plugin: "com.android.library"
+   
+   // After
+   apply plugin: "com.android.application"
+   ```
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+3. Run the app:
+   ```bash
+   npx react-native run-android
+   ```
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+---
 
-## Congratulations! :tada:
+## 🔄 React Native Reanimated Setup
 
-You've successfully run and modified your React Native App. :partying_face:
+### Modify `ReanimatedPackage.java`
+```java
+package com.swmansion.reanimated;
 
-### Now what?
+// ... [Other imports]
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+@ReactModuleList(nativeModules = {ReanimatedModule.class, ReanimatedUIManager.class})
+public class ReanimatedPackage extends TurboReactPackage implements ReactPackage {
+    private static ReactInstanceManager reactInstanceManager;
 
-# Troubleshooting
+    // Set from MainActivity during React Native initialization
+    public static void setReactInstanceManager(ReactInstanceManager instance) {
+        reactInstanceManager = instance;
+    }
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+    // 💡 Critical fix for UIManager access
+    private UIManagerModule createUIManager(final ReactApplicationContext reactContext) {
+        ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
+        Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
 
-# Learn More
+        try {
+            List<ViewManager> viewManagers = getReactInstanceManager()
+                .getOrCreateViewManagers(reactContext);
+            return ReanimatedUIManagerFactory.create(reactContext, viewManagers, -1);
+        } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+            ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
+        }
+    }
 
-To learn more about React Native, take a look at the following resources:
+    private ReactInstanceManager getReactInstanceManager() {
+        if (reactInstanceManager == null) {
+            throw new IllegalStateException("ReactInstanceManager not set!");
+        }
+        return reactInstanceManager;
+    }
+}
+```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+---
+
+## 📂 Source Code Management
+
+### Copy RN Package Sources
+Copy files from `node_modules` to your app’s module:
+```
+android/app/src/main/java/com/
+```
+
+**Why?**  
+This ensures classes from packages like `react-native-safe-area-context` are accessible in your app’s `:app` module.
+
+---
+
+## ⚠️ Critical Notes
+
+1. **Java 17 Requirement**
+   - Install JDK 17
+   - Set `JAVA_HOME` in your environment variables
+
+2. **Version Compatibility**
+   ```json
+   "dependencies": {
+     "react": "^18.2.0",
+     "react-native": "^0.73.0",
+     "react-native-reanimated": "^3.6.0",
+     "react-native-safe-area-context": "^4.7.0"
+   }
+   ```
+
+3. **Temporary Fix Warning**  
+   Modifying `node_modules` directly is **not persistent**. For production:
+   - Use [`patch-package`](https://www.npmjs.com/package/patch-package)
+   - Fork and patch the original repositories
+
+4. **Clean Builds**  
+   After configuration changes:
+   ```bash
+   cd android && ./gradlew clean && cd ..
+   ```
