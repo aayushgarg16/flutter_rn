@@ -8,9 +8,9 @@ import App from './App/App';
 import {name as appName} from './app.json';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-const Root = () => (
+const Root = (props) => (
     <GestureHandlerRootView style={{ flex: 1 }}>
-        <App />
+        <App {...props} />
     </GestureHandlerRootView>
 );
 

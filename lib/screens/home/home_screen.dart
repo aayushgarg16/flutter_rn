@@ -52,13 +52,38 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const KYCScreen()),
-          );
-        },
-        child: const Text('Open React Native Page'),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 16.0, // Left padding
+              top: 24.0,
+              bottom: 16.0,
+            ),
+            child: const Text(
+              'I am Flutter including dashboard',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const KYCScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48), // Full width
+              ),
+              child: const Text('Open React Native KYC Page'),
+            ),
+          ),
+          const SizedBox(height: 16), // Additional spacing
+        ],
       ),
     );
   }

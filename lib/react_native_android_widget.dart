@@ -10,7 +10,11 @@ class ReactNativeAndroidWidget extends StatelessWidget {
     return AndroidView(
       viewType: viewType,
       layoutDirection: TextDirection.ltr,
-      creationParams: {},
+      creationParams: {
+        'screen': 'HomeScreen',
+        'userId': '12345',
+        'name': 'Aayush',
+      },
       creationParamsCodec: const StandardMessageCodec(),
     );
   }
