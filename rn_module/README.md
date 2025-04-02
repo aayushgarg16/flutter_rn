@@ -47,30 +47,6 @@ class InsetsChangeEvent(...)  // Remove 'internal' modifier
 
 ---
 
-## 🚀 Run the Application
-
-### Switch to Application Build
-1. **Uncomment** in your Android project:
-   - `MainApplication.java`
-   - `MainActivity.java`
-   - `AndroidManifest.xml`
-
-2. Update `android/app/build.gradle`:
-   ```groovy
-   // Before
-   apply plugin: "com.android.library"
-   
-   // After
-   apply plugin: "com.android.application"
-   ```
-
-3. Run the app:
-   ```bash
-   npx react-native run-android
-   ```
-
----
-
 ## 🔄 React Native Reanimated Setup
 
 ### Modify `ReanimatedPackage.java`
@@ -127,29 +103,24 @@ This ensures classes from packages like `react-native-safe-area-context` are acc
 
 ---
 
-## ⚠️ Critical Notes
+## 🚀 Run the React Native Only Application
 
-1. **Java 17 Requirement**
-   - Install JDK 17
-   - Set `JAVA_HOME` in your environment variables
+### Switch to Application Build
+1. **Uncomment** in your Android project:
+   - `MainApplication.java`
+   - `MainActivity.java`
+   - `AndroidManifest.xml`
 
-2. **Version Compatibility**
-   ```json
-   "dependencies": {
-     "react": "^18.2.0",
-     "react-native": "^0.73.0",
-     "react-native-reanimated": "^3.6.0",
-     "react-native-safe-area-context": "^4.7.0"
-   }
+2. Update `android/app/build.gradle`:
+   ```groovy
+   // Before
+   apply plugin: "com.android.library"
+   
+   // After
+   apply plugin: "com.android.application"
    ```
 
-3. **Temporary Fix Warning**  
-   Modifying `node_modules` directly is **not persistent**. For production:
-   - Use [`patch-package`](https://www.npmjs.com/package/patch-package)
-   - Fork and patch the original repositories
-
-4. **Clean Builds**  
-   After configuration changes:
+3. Run the app:
    ```bash
-   cd android && ./gradlew clean && cd ..
+   npx react-native run-android
    ```
